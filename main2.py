@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import time
 import tkinter
 from tkinter import filedialog
