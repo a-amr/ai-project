@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 
 
-def train_dec_model(max_depth, decision_tree_model, time_label: tkinter.Label):
+def train_dt_model(max_depth, dt_model, time_label: tkinter.Label):
     features_dataset_path = filedialog.askopenfilename(title="Select The train FEATURES(X) Dataset", filetypes=[("CSV files", "*.csv")])
     labels_dataset_path = filedialog.askopenfilename(title="Select The train LABELS(y) Dataset", filetypes=[("CSV files", "*.csv")])
     X_train_raw = pd.read_csv(features_dataset_path, header=None)
@@ -24,17 +24,17 @@ def train_dec_model(max_depth, decision_tree_model, time_label: tkinter.Label):
         X_train[i] = np.rot90(X_train[i], k=3)
         X_train[i] = np.flip(X_train[i], axis=1)
     if len(max_depth) == 0:
-        decision_tree_model.max_depth = None
+        dt_model.max_depth = None
     else:
-        decision_tree_model.max_depth = int(max_depth)
-    decision_tree_start_train_time = time.time()
-    decision_tree_model.fit(X_train_flat, y_train)
-    decision_tree_end_train_time = time.time()
-    decision_tree_total_train_time = decision_tree_end_train_time - decision_tree_start_train_time
-    time_label.config(text=f"Train time = {round(decision_tree_total_train_time)} sec", font=18)
+        dt_model.max_depth = int(max_depth)
+    dt_starf_train_time = time.time()
+    dt_model.fit(X_train_flat, y_train)
+    dt_end_train_time = time.time()
+    dt_total_train_time = dt_end_train_time - dt_starf_train_time
+    time_label.config(text=f"Train time = {round(dt_total_train_time)} sec", font=18)
 
 
-def predict_image_using_decision_tree(decision_tree_model: DecisionTreeClassifier, prediction_label: tkinter.Label):
+def pred_image_using_dt(dt_model: DecisionTreeClassifier, predion_label: tkinter.Label):
     file_path = filedialog.askopenfilename(title="Select the image",
                                            filetypes=[("Image files", "*.png")])
     if file_path:
@@ -42,10 +42,10 @@ def predict_image_using_decision_tree(decision_tree_model: DecisionTreeClassifie
         image = cv2.resize(image, (28, 28))
         image = np.ravel(image)
         image = image.reshape(1, -1)
-        prediction_label.config(text=f"Number is: {decision_tree_model.predict(image)}", font=18)
+        predion_label.config(text=f"Number is: {dt_model.predict(image)}", font=18)
 
 
-def dt_model_csv(decision_tree_model: DecisionTreeClassifier, accuracy_label: tkinter.Label, compute_acc):
+def dt_model_csv(dt_model: DecisionTreeClassifier, accuracy_label: tkinter.Label, compute_acc):
 
     features_dataset_path = filedialog.askopenfilename(title="Select The test FEATURES(X) Dataset",
                                                        filetypes=[("CSV files", "*.csv")])
@@ -59,16 +59,16 @@ def dt_model_csv(decision_tree_model: DecisionTreeClassifier, accuracy_label: tk
         X_test[i] = np.rot90(X_test[i], k=3)
         X_test[i] = np.flip(X_test[i], axis=1)
     X_test_flat = X_test.reshape(X_test.shape[0], -1)
-    y_pred = decision_tree_model.predict(X_test_flat)
-    pd.DataFrame(y_pred).to_csv("predictions.csv", index=False, header=False)
-    print("Predicted")
+    y_pred = dt_model.predict(X_test_flat)
+    pd.DataFrame(y_pred).to_csv("predions.csv", index=False, header=False)
+    print("preded")
     if compute_acc:
         y_test = np.ravel(pd.read_csv(labels_dataset_path, header=None).to_numpy())
         test_accuracy = accuracy_score(y_test, y_pred)
         accuracy_label.config(text=f"Accuracy: {round(test_accuracy *100, 3)}%", font=18)
 
 
-def train_rnd_forest_model(max_depth, n_selectors, random_forest_model,
+def train_rf_model(max_depth, n_selectors, rf_model,
                            time_label: tkinter.Label):
     features_dataset_path = filedialog.askopenfilename(title="Select The train FEATURES(X) Dataset",
                                                        filetypes=[("CSV files", "*.csv")])
@@ -85,30 +85,30 @@ def train_rnd_forest_model(max_depth, n_selectors, random_forest_model,
         X_train[i] = np.rot90(X_train[i], k=3)
         X_train[i] = np.flip(X_train[i], axis=1)
     if len(max_depth) == 0:
-        random_forest_model.max_depth = None
+        rf_model.max_depth = None
     else:
-        random_forest_model.max_depth = int(max_depth)
+        rf_model.max_depth = int(max_depth)
     if len(n_selectors) == 0:
-        random_forest_model.n_estimators = 10
+        rf_model.n_estimators = 10
     else:
-        random_forest_model.n_estimators = int(n_selectors)
-    random_forest_start_train_time = time.time()
-    random_forest_model.fit(X_train_flat, y_train)
-    random_forest_end_train_time = time.time()
-    random_forest_total_train_time = random_forest_end_train_time - random_forest_start_train_time
-    time_label.config(text=f"Train time = {round(random_forest_total_train_time)} sec", font=18)
+        rf_model.n_estimators = int(n_selectors)
+    rf_starf_train_time = time.time()
+    rf_model.fit(X_train_flat, y_train)
+    rf_end_train_time = time.time()
+    rf_total_train_time = rf_end_train_time - rf_starf_train_time
+    time_label.config(text=f"Train time = {round(rf_total_train_time)} sec", font=18)
 
 
-def predict_image_using_random_forest(random_forest_model: RandomForestClassifier, prediction_label: tkinter.Label):
+def pred_image_using_rf(rf_model: RandomForestClassifier, predion_label: tkinter.Label):
     image = cv2.imread(filedialog.askopenfilename(title="Select the image",
                                                   filetypes=[("Image files", "*.png")]),
                        cv2.IMREAD_GRAYSCALE)
     image = cv2.resize(image, (28, 28))
     image = np.ravel(image)
     image = image.reshape(1, -1)
-    prediction_label.config(text=f"Number is: {random_forest_model.predict(image)}", font=18)
+    predion_label.config(text=f"Number is: {rf_model.predict(image)}", font=18)
 
-def predict_csv_using_random_forest(random_forest_model: RandomForestClassifier, accuracy_label: tkinter.Label,
+def pred_csv_using_rf(rf_model: RandomForestClassifier, accuracy_label: tkinter.Label,
                                     compute_acc):
     features_dataset_path = filedialog.askopenfilename(title="Select The test FEATURES(X) Dataset",
                                                        filetypes=[("CSV files", "*.csv")])
@@ -122,7 +122,7 @@ def predict_csv_using_random_forest(random_forest_model: RandomForestClassifier,
         X_test[i] = np.rot90(X_test[i], k=3)
         X_test[i] = np.flip(X_test[i], axis=1)
     X_test_flat = X_test.reshape(X_test.shape[0], -1)
-    y_pred = random_forest_model.predict(X_test_flat)
+    y_pred = rf_model.predict(X_test_flat)
     pd.DataFrame(y_pred).to_csv("preds.csv", index=False, header=False)
     if compute_acc:
         y_test = np.ravel(pd.read_csv(labels_dataset_path, header=None).to_numpy())
@@ -135,9 +135,9 @@ def validate_input(char):
     return char.isdigit()
 
 
-dec_model = DecisionTreeClassifier()
+dt_model = DecisionTreeClassifier()
 
-rnd_forest_model = RandomForestClassifier()
+rf_model = RandomForestClassifier()
 
 window = tkinter.Tk()
 window.config(background="#222222")
@@ -159,98 +159,97 @@ dec_max_entry = tkinter.Entry(decArea, width=20, font=(18), bg="#333333", valida
 dec_max_entry.grid(row=1, column=1, padx=(10, 10))
 
 dec_train_button = tkinter.Button(decArea,
-                                       command=lambda: train_dec_model(dec_max_entry.get(),
-                                                                            dec_model, dec_train_time_label),
-                                       bg="#222222", text="Train decision tree model", fg="#FFFFFF", font=(18))
+                                command=lambda: train_dt_model(dec_max_entry.get() , 
+                                dt_model, dec_train_time_label),
+                                bg="#222222", text="Train decision tree model", fg="#FFFFFF", font=(18))
 dec_train_button.grid(row=2, column=0, padx=(50, 50), pady=(50, 15))
 
 dec_train_time_label = tkinter.Label(decArea, bg="#111111", fg="white")
 dec_train_time_label.grid(row=2, column=1, padx=(50, 50), pady=(50, 15))
 
-dec_predict_image_button = tkinter.Button(decArea,
-                                               command=lambda: predict_image_using_decision_tree(dec_model,
-                                                                                                 dec_predict_image_result),
-                                               bg="#222222", text="Predict image", fg="#FFFFFF", font=(18))
-dec_predict_image_button.grid(row=3, column=0, padx=(50, 50), pady=(50, 15))
-dec_predict_image_result = tkinter.Label(decArea, bg="#111111", fg="white")
-dec_predict_image_result.grid(row=3, column=1, padx=(50, 50), pady=(50, 15))
+dec_pred_image_button = tkinter.Button(decArea,
+                                   command=lambda: pred_image_using_dt(dt_model,
+                                   dec_pred_image_result),
+                                   bg="#222222", text="pred image", fg="#FFFFFF", font=(18))
+dec_pred_image_button.grid(row=3, column=0, padx=(50, 50), pady=(50, 15))
+dec_pred_image_result = tkinter.Label(decArea, bg="#111111", fg="white")
+dec_pred_image_result.grid(row=3, column=1, padx=(50, 50), pady=(50, 15))
 
-dec_pre_button = tkinter.Button(decArea, command=lambda: dt_model_csv(dec_model,dec_predict_acc, dec_check_var.get() == 1) 
-                                         , bg="#222222", text="Predict CSV", fg="#FFFFFF", font=(18))
+dec_pre_button = tkinter.Button(decArea, command=lambda: dt_model_csv(dt_model,dec_pred_acc, dec_check_var.get() == 1), bg="#222222", text="pred CSV", fg="#FFFFFF", font=(18))
 dec_pre_button.grid(row=4, column=0, padx=(50, 0), pady=(50, 0))
 
-dec_predict_label = tkinter.Label(decArea, text="Compute accuracy", font=18, bg="#111111", fg="white")
-dec_predict_label.grid(row=5, column=0, padx=(50, 0), pady=(0, 15))
+dec_pred_label = tkinter.Label(decArea, text="Compute accuracy", font=18, bg="#111111", fg="white")
+dec_pred_label.grid(row=5, column=0, padx=(50, 0), pady=(0, 15))
 dec_check_var = tkinter.IntVar()
-dec_predict_check = tkinter.Checkbutton(decArea, bg="#111111", variable=dec_check_var)
-dec_predict_check.grid(row=5, column=1, padx=(0, 50), pady=(0, 15))
+dec_pred_check = tkinter.Checkbutton(decArea, bg="#111111", variable=dec_check_var)
+dec_pred_check.grid(row=5, column=1, padx=(0, 50), pady=(0, 15))
 
-dec_predict_acc = tkinter.Label(decArea, text="", font=18, bg="#111111", fg="white")
-dec_predict_acc.grid(row=6, column=0, columnspan=2)
+dec_pred_acc = tkinter.Label(decArea, text="", font=18, bg="#111111", fg="white")
+dec_pred_acc.grid(row=6, column=0, columnspan=2)
 
-########## Start Random forest ##########
+########## Starf Random forest ##########
 
 ranForArea = tkinter.Frame(window, bg="#111111")
 ranForArea.grid(row=0, column=1, padx=(50, 50), pady=(15, 15))
 
-random_forest_label = tkinter.Label(ranForArea, text="Random forest", bg="#111111", fg="white", font=(18))
-random_forest_label.grid(row=0, column=0, columnspan=2, pady=(15, 50))
+rf_label = tkinter.Label(ranForArea, text="Random forest", bg="#111111", fg="white", font=(18))
+rf_label.grid(row=0, column=0, columnspan=2, pady=(15, 50))
 
-rnd_forest_max_depth_label = tkinter.Label(ranForArea, text="Max depth:", background="#111111", fg="white",
+rf_max_depth_label = tkinter.Label(ranForArea, text="Max depth:", background="#111111", fg="white",
                                            font=(18))
-rnd_forest_max_depth_label.grid(row=1, column=0, padx=(10, 20))
+rf_max_depth_label.grid(row=1, column=0, padx=(10, 20))
 
 validate_func = window.register(validate_input)
 
-rnd_forest_max_entry = tkinter.Entry(ranForArea, width=20, font=(18), bg="#333333", validate="key",
+rf_max_entry = tkinter.Entry(ranForArea, width=20, font=(18), bg="#333333", validate="key",
                                      validatecommand=(validate_func, "%S"))
-rnd_forest_max_entry.grid(row=1, column=1, padx=(10, 10))
+rf_max_entry.grid(row=1, column=1, padx=(10, 10))
 
-rnd_forest_selectors_label = tkinter.Label(ranForArea, text="Number of estimators:", background="#111111",
+rf_selectors_label = tkinter.Label(ranForArea, text="Number of estimators:", background="#111111",
                                            fg="white",
                                            font=(18))
 
-rnd_forest_selectors_label.grid(row=2, column=0, padx=(10, 20))
+rf_selectors_label.grid(row=2, column=0, padx=(10, 20))
 
-rnd_forest_selectors_entry = tkinter.Entry(ranForArea, width=20,
+rf_selectors_entry = tkinter.Entry(ranForArea, width=20,
                                            font=(18), bg="#333333", validate="key",
                                            validatecommand=(validate_func, "%S"))
 
-rnd_forest_selectors_entry.grid(row=2, column=1, padx=(10, 10))
+rf_selectors_entry.grid(row=2, column=1, padx=(10, 10))
 
-rnd_forest_train_button = tkinter.Button(ranForArea, 
-                                            command=lambda: train_rnd_forest_model(rnd_forest_max_entry.get(),
-                                            rnd_forest_selectors_entry. get(), rnd_forest_model, 
-                                            rnd_forest_train_time_label), bg="#222222", text="Train random forest model", fg="#FFFFFF", font=(18))
+rf_train_button = tkinter.Button(ranForArea, 
+                                            command=lambda: train_rf_model(rf_max_entry.get(),
+                                            rf_selectors_entry. get(), rf_model, 
+                                            rf_train_time_label), bg="#222222", text="Train random forest model", fg="#FFFFFF", font=(18))
 
 
-rnd_forest_train_button.grid(row=3, column=0, padx=(50, 50), pady=(50, 15))
+rf_train_button.grid(row=3, column=0, padx=(50, 50), pady=(50, 15))
 
-rnd_forest_train_time_label = tkinter.Label(ranForArea, bg="#111111", fg="white")
-rnd_forest_train_time_label.grid(row=3, column=1, padx=(50, 50), pady=(50, 15))
+rf_train_time_label = tkinter.Label(ranForArea, bg="#111111", fg="white")
+rf_train_time_label.grid(row=3, column=1, padx=(50, 50), pady=(50, 15))
 
-rnd_forest_predict_image_button = tkinter.Button(ranForArea,
-                                                 command=lambda: predict_image_using_random_forest(rnd_forest_model,
-                                                                                                   rnd_forest_predict_image_result),
-                                                 bg="#222222", text="Predict image", fg="#FFFFFF", font=(18))
-rnd_forest_predict_image_button.grid(row=4, column=0, padx=(50, 50), pady=(50, 15))
-rnd_forest_predict_image_result = tkinter.Label(ranForArea, bg="#111111", fg="white")
-rnd_forest_predict_image_result.grid(row=4, column=1, padx=(50, 50), pady=(50, 15))
+rf_pred_image_button = tkinter.Button(ranForArea,
+                                                 command=lambda: pred_image_using_rf(rf_model,
+                                                                                                   rf_pred_image_result),
+                                                 bg="#222222", text="pred image", fg="#FFFFFF", font=(18))
+rf_pred_image_button.grid(row=4, column=0, padx=(50, 50), pady=(50, 15))
+rf_pred_image_result = tkinter.Label(ranForArea, bg="#111111", fg="white")
+rf_pred_image_result.grid(row=4, column=1, padx=(50, 50), pady=(50, 15))
 
-rnd_forest_predict_button = tkinter.Button(ranForArea,
-                                           command=lambda: predict_csv_using_random_forest(rnd_forest_model,
-                                                                                           rnd_forest_predict_acc,
-                                                                                           rnd_forest_check_var.get() == 1)
-                                           , bg="#222222", text="Predict CSV", fg="#FFFFFF", font=(18))
-rnd_forest_predict_button.grid(row=5, column=0, padx=(50, 0), pady=(50, 0))
+rf_pred_button = tkinter.Button(ranForArea,
+                                           command=lambda: pred_csv_using_rf(rf_model,
+                                                                                           rf_pred_acc,
+                                                                                           rf_check_var.get() == 1)
+                                           , bg="#222222", text="pred CSV", fg="#FFFFFF", font=(18))
+rf_pred_button.grid(row=5, column=0, padx=(50, 0), pady=(50, 0))
 
-rnd_forest_predict_label = tkinter.Label(ranForArea, text="Compute accuracy", font=18, bg="#111111", fg="white")
-rnd_forest_predict_label.grid(row=6, column=0, padx=(50, 0), pady=(0, 15))
-rnd_forest_check_var = tkinter.IntVar()
-rnd_forest_predict_check = tkinter.Checkbutton(ranForArea, bg="#111111", variable=rnd_forest_check_var)
-rnd_forest_predict_check.grid(row=6, column=1, padx=(0, 50), pady=(0, 15))
+rf_pred_label = tkinter.Label(ranForArea, text="Compute accuracy", font=18, bg="#111111", fg="white")
+rf_pred_label.grid(row=6, column=0, padx=(50, 0), pady=(0, 15))
+rf_check_var = tkinter.IntVar()
+rf_pred_check = tkinter.Checkbutton(ranForArea, bg="#111111", variable=rf_check_var)
+rf_pred_check.grid(row=6, column=1, padx=(0, 50), pady=(0, 15))
 
-rnd_forest_predict_acc = tkinter.Label(ranForArea, text="", font=18, bg="#111111", fg="white")
-rnd_forest_predict_acc.grid(row=7, column=0, columnspan=2)
+rf_pred_acc = tkinter.Label(ranForArea, text="", font=18, bg="#111111", fg="white")
+rf_pred_acc.grid(row=7, column=0, columnspan=2)
 
 window.mainloop()
