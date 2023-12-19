@@ -40,13 +40,8 @@ def predict_image_using_decision_tree(decision_tree_model: DecisionTreeClassifie
     if file_path:
         image = cv2.imread(file_path, cv2.IMREAD_GRAYSCALE)
         image = cv2.resize(image, (28, 28))
-        cv2.imwrite("out.png", image)
         image = np.ravel(image)
         image = image.reshape(1, -1)
-        cv2.imwrite("out2.png", image)
-        print(image.shape)
-        with open("img.txt", 'w') as f:
-            print(image, file=f)
         prediction_label.config(text=f"Number is: {decision_tree_model.predict(image)}", font=18)
 
 
@@ -65,7 +60,7 @@ def dt_model_csv(decision_tree_model: DecisionTreeClassifier, accuracy_label: tk
         X_test[i] = np.flip(X_test[i], axis=1)
     X_test_flat = X_test.reshape(X_test.shape[0], -1)
     y_pred = decision_tree_model.predict(X_test_flat)
-    pd.DataFrame(y_pred).to_csv("preds.csv", index=False, header=False)
+    pd.DataFrame(y_pred).to_csv("predictions.csv", index=False, header=False)
     print("Predicted")
     if compute_acc:
         y_test = np.ravel(pd.read_csv(labels_dataset_path, header=None).to_numpy())
@@ -108,15 +103,9 @@ def predict_image_using_random_forest(random_forest_model: RandomForestClassifie
     image = cv2.imread(filedialog.askopenfilename(title="Select the image",
                                                   filetypes=[("Image files", "*.png")]),
                        cv2.IMREAD_GRAYSCALE)
-    print(image.shape)
     image = cv2.resize(image, (28, 28))
-    cv2.imwrite("out.png", image)
     image = np.ravel(image)
     image = image.reshape(1, -1)
-    cv2.imwrite("out2.png", image)
-    print(image.shape)
-    with open("img.txt", 'w') as f:
-        print(image, file=f)
     prediction_label.config(text=f"Number is: {random_forest_model.predict(image)}", font=18)
 
 def predict_csv_using_random_forest(random_forest_model: RandomForestClassifier, accuracy_label: tkinter.Label,
